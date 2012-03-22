@@ -9,8 +9,9 @@ import org.java_websocket.handshake.ServerHandshake;
 import com.neighborparrot.ParrotListener;
 
 /**
- * Bridge between Neighbporparrot service and the websocket low 
- * level driver
+ * Bridge between Neighbporparrot service 
+ * and the websocket low level driver 
+ * 
  * @author Eloy Gomez
  *
  */
@@ -33,7 +34,7 @@ public class WebSocketBridge extends WebSocketClient {
 	@Override
 	public void onOpen(ServerHandshake handshakedata) {	
 		for (ParrotListener listener : parrotListeners)	{
-			listener.onConnect();
+			listener.onOpen();
 		}
 	}
 	

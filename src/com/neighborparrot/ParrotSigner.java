@@ -10,7 +10,14 @@ import java.util.HashMap;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-
+/**
+ * Parrot Signer allow you sign request 
+ * for your clients.
+ * Currently, only websockets connections are supported. 
+ * 
+ * @author Eloy Gomez
+ *
+ */
 public class ParrotSigner {
 	
 	private static final String WS_ENDPOINT = "/ws";
@@ -24,6 +31,14 @@ public class ParrotSigner {
 	private static final String CURRENT_AUTH_VERSION = "1.0";
 	
 
+	/**
+	 * Sign a connect request and return a valid URI 
+	 * ready for use in with any Neighborparrot driver.
+	 * @param request
+	 * @param api_id
+	 * @param api_key
+	 * @return ready to use signed request
+	 */
 	public static URI signConnectRequest(ConnectionRequest request, String api_id, String api_key)	{
 		HashMap<String, String> params = request.getParams();
 		
@@ -43,10 +58,16 @@ public class ParrotSigner {
          
          items.add(AUTH_SIGNATURE+"="+signature);
          String params_url = join(items, "&");
-         return URI.create("ws://localhost:9000/ws?" + params_url);          
+         return URI.create("wss://neighborparrot.net/ws?" + params_url);          
 	}
 	
-	
+	/**
+	 * Array join helper..
+	 * Ruby, I miss you...
+	 * @param items
+	 * @param d
+	 * @return
+	 */
 	private static String join(ArrayList<String> items, String d) {
 	        StringBuilder sb = new StringBuilder();
 	        int i;

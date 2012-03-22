@@ -5,79 +5,113 @@ import java.nio.channels.NotYetConnectedException;
 
 import com.neighborparrot.internal.bridge.WebSocketBridge;
 
+/**
+ * Java driver for the Neighborparrot Service
+ * http://nbparrot.com
+ * 
+ * This driver only implement websocket 
+ * connections.
+ * 
+ * @author Eloy Gomez
+ *
+ */
 public class Parrot  {
 	
 	private WebSocketBridge bridge;
 	
+	/**
+	 * Neighborparrot constructor, create a new WebSocket
+	 * ready for receive the connect order.
+	 * This contructor sign the request and prepare 
+	 * a websocket connection without presence information.
+	 * @param channel
+	 * @param api_id
+	 * @param api_key
+	 */
 	public Parrot(String channel, String api_id, String api_key) {
-		this(new ConnectionRequest("test"), api_id, api_key);
+		this(new ConnectionRequest(channel), api_id, api_key);
 	}
 	
+	/**
+	 * Neighborparrot constructor, create a new WebSocket
+	 * ready for receive the connect order.  
+	 * This constructor take a ConnectionRequest with yor 
+	 * values for channel, presence and other options.
+	 * @param request
+	 * @param api_id
+	 * @param api_key
+	 */
 	public Parrot(ConnectionRequest request, String api_id, String api_key) {
 		this(ParrotSigner.signConnectRequest(request, api_id, api_key));
 	}
 	
+	/**
+	 * Neighborparrot constructor, create a new WebSocket
+	 * ready for receive the connect order.
+	 * This consturctor need a signed request generated
+	 * in your server and the client don't have notice about api_key
+	 * keeping it secure in your server.  
+	 * @param connection_uri
+	 */
 	public Parrot(URI connection_uri) {
 		bridge = new WebSocketBridge(connection_uri);
 	}
 	
 	/**
-	 * @param listener
-	 * @see com.neighborparrot.internal.bridge.WebSocketBridge#addParrotListener(com.neighborparrot.ParrotListener)
+	 * Add a ParrotListener
+	 * Each listener receive the websockets events
+	 *  
+	 * @param listener 
 	 */
 	public void addParrotListener(ParrotListener listener) {
 		bridge.addParrotListener(listener);
 	}
 
 	/**
+	 * Remove a parrot listener
 	 * @param listener
-	 * @see com.neighborparrot.internal.bridge.WebSocketBridge#removeParrotListener(com.neighborparrot.ParrotListener)
 	 */
 	public void removeParrotListener(ParrotListener listener) {
 		bridge.removeParrotListener(listener);
 	}
 
 	/**
-	 * 
-	 * @see org.java_websocket.WebSocketClient#connect()
+	 * Open websocket connection
 	 */
 	public void connect() {
 		bridge.connect();
 	}
 
 	/**
-	 * 
-	 * @see org.java_websocket.WebSocketClient#close()
+	 * Close websocket connection 
 	 */
 	public void close() {
 		bridge.close();
 	}
 
 	/**
-	 * @param text
-	 * @throws NotYetConnectedException
-	 * @throws InterruptedException
-	 * @see org.java_websocket.WebSocketClient#send(java.lang.String)
+	 * Send a message to the connected channel
+	 * trigger onError if fail
+	 * 
+	 * @param message
 	 */
-	public void send(String text) {
+	public void send(String message) {
 		try {
-			bridge.send(text);
-		} catch (NotYetConnectedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			bridge.send(message);
+		} catch (Exception e) {
+			bridge.onError(e);
 		}
 	}
 	
 	/**
-	 * @param text
+	 * Send a message to the connected channel and
+	 * throw exceptions on errors.
+	 * @param message
 	 * @throws NotYetConnectedException
 	 * @throws InterruptedException
-	 * @see org.java_websocket.WebSocketClient#send(java.lang.String)
 	 */
-	public void sendEx(String text) throws NotYetConnectedException, InterruptedException {
-		bridge.send(text);
+	public void sendEx(String message) throws NotYetConnectedException, InterruptedException {
+		bridge.send(message);
 	}
+	
 }
