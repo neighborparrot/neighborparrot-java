@@ -1,29 +1,26 @@
 package com.neighborparrot;
 
-import java.net.URI;
 import java.nio.channels.NotYetConnectedException;
 
 import com.neighborparrot.internal.bridge.WebSocketBridge;
 
 /**
- * Java driver for the Neighborparrot Service
- * http://nbparrot.com
+ * Java driver for the Neighborparrot Service http://nbparrot.com
  * 
- * This driver only implement websocket 
- * connections.
+ * This driver only implement websocket connections.
  * 
  * @author Eloy Gomez
- *
+ * 
  */
-public class Parrot  {
-	
+public class Parrot {
+
 	private WebSocketBridge bridge;
-	
+
 	/**
-	 * Neighborparrot constructor, create a new WebSocket
-	 * ready for receive the connect order.
-	 * This contructor sign the request and prepare 
-	 * a websocket connection without presence information.
+	 * Neighborparrot constructor, create a new WebSocket ready for receive the
+	 * connect order. This contructor sign the request and prepare a websocket
+	 * connection without presence information.
+	 * 
 	 * @param channel
 	 * @param api_id
 	 * @param api_key
@@ -31,37 +28,25 @@ public class Parrot  {
 	public Parrot(String channel, String api_id, String api_key) {
 		this(new ConnectionRequest(channel), api_id, api_key);
 	}
-	
+
 	/**
-	 * Neighborparrot constructor, create a new WebSocket
-	 * ready for receive the connect order.  
-	 * This constructor take a ConnectionRequest with yor 
-	 * values for channel, presence and other options.
+	 * Neighborparrot constructor, create a new WebSocket ready for receive the
+	 * connect order. This constructor take a ConnectionRequest with yor values
+	 * for channel, presence and other options.
+	 * 
 	 * @param request
 	 * @param api_id
 	 * @param api_key
 	 */
 	public Parrot(ConnectionRequest request, String api_id, String api_key) {
-		this(ParrotSigner.signConnectRequest(request, api_id, api_key));
+		request.sign(api_id, api_key);		
+		this.bridge = new WebSocketBridge(request.toURI());
 	}
-	
+
 	/**
-	 * Neighborparrot constructor, create a new WebSocket
-	 * ready for receive the connect order.
-	 * This consturctor need a signed request generated
-	 * in your server and the client don't have notice about api_key
-	 * keeping it secure in your server.  
-	 * @param connection_uri
-	 */
-	public Parrot(URI connection_uri) {
-		bridge = new WebSocketBridge(connection_uri);
-	}
-	
-	/**
-	 * Add a ParrotListener
-	 * Each listener receive the websockets events
-	 *  
-	 * @param listener 
+	 * Add a ParrotListener Each listener receive the websockets events
+	 * 
+	 * @param listener
 	 */
 	public void addParrotListener(ParrotListener listener) {
 		bridge.addParrotListener(listener);
@@ -69,6 +54,7 @@ public class Parrot  {
 
 	/**
 	 * Remove a parrot listener
+	 * 
 	 * @param listener
 	 */
 	public void removeParrotListener(ParrotListener listener) {
@@ -83,15 +69,14 @@ public class Parrot  {
 	}
 
 	/**
-	 * Close websocket connection 
+	 * Close websocket connection
 	 */
 	public void close() {
 		bridge.close();
 	}
 
 	/**
-	 * Send a message to the connected channel
-	 * trigger onError if fail
+	 * Send a message to the connected channel trigger onError if fail
 	 * 
 	 * @param message
 	 */
@@ -102,16 +87,16 @@ public class Parrot  {
 			bridge.onError(e);
 		}
 	}
-	
+
 	/**
-	 * Send a message to the connected channel and
-	 * throw exceptions on errors.
+	 * Send a message to the connected channel and throw exceptions on errors.
+	 * 
 	 * @param message
 	 * @throws NotYetConnectedException
 	 * @throws InterruptedException
 	 */
-	public void sendEx(String message) throws NotYetConnectedException, InterruptedException {
+	public void sendEx(String message) throws NotYetConnectedException,	InterruptedException {
 		bridge.send(message);
 	}
-	
+
 }

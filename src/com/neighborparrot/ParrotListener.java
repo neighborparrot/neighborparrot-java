@@ -21,12 +21,14 @@ public interface ParrotListener {
 	
 	/**
 	 * Triggered when something was wrong 
+	 * 
 	 * @param ex
 	 */
 	public void onError(Exception ex);
 	
 	/**
 	 * Triggered when close the connection
+	 * 
 	 * @param code status code
 	 * @param reason Closes description
 	 * @param remote true if the server close the connection
